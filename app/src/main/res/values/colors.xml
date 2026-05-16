@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Professional Security Palette - Deep Cyber Theme -->
+    <color name="primary_dark">#0D1B2A</color>
+    <color name="primary_main">#1B263B</color>
+    <color name="primary_light">#415A77</color>
+    <color name="accent_security">#778DA9</color>
+    <color name="cyan_glow">#00E5FF</color>
+
+    <!-- Severity Colors (Material 3 Specs) -->
+    <color name="severity_critical">#E63946</color>
+    <color name="severity_warning">#FFB703</color>
+    <color name="severity_info">#219EBC</color>
+    <color name="severity_safe">#2D6A4F</color>
+
+    <!-- Backgrounds -->
+    <color name="surface_background">#F0F2F5</color>
+    <color name="card_background">#FFFFFF</color>
+
+    <!-- Gradients -->
+    <color name="grad_start">#1B263B</color>
+    <color name="grad_end">#0D1B2A</color>
+</resources>

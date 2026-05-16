@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Secure Inspector</string>
+    <string name="title_system_overview">System Overview</string>
+    <string name="label_critical">Critical</string>
+    <string name="label_warnings">Warnings</string>
+    <string name="label_info">Info</string>
+    <string name="title_detailed_findings">Detailed Findings</string>
+    <string name="action_scan_application">Scan Application</string>
+    <string name="msg_inspection_complete">Inspection Complete</string>
+    <string name="msg_no_vulnerabilities">No vulnerabilities detected!</string>
+    <string name="fmt_summary_toast">Found %1$d issues (%2$d critical)</string>
+    <string name="label_recommendation">Recommendation</string>
+    <string name="msg_ready_to_scan">System Ready</string>
+    <string name="msg_start_audit">Tap the button below to start the security audit.</string>
+</resources>
