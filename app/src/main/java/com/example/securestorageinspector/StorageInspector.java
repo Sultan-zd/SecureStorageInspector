@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,12 +16,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Enterprise-Grade Security Audit SDK.
- * Now expanded to perform System-Wide audits of other installed applications.
+ * Enterprise-Grade Security Audit & Storage Explorer Engine.
  */
 public class StorageInspector {
 
@@ -28,148 +30,147 @@ public class StorageInspector {
     private final List<Finding> findings = new ArrayList<>();
     private long lastScanDuration = 0;
 
-    // Advanced Detection Patterns
+    // Advanced Detection Patterns (Sensitive Data Classifier)
     private static final Pattern JWT_PATTERN = Pattern.compile("eyJ[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*");
-    private static final Pattern GENERIC_SECRET = Pattern.compile("(?i)(password|secret|api_key|auth_token|access_token|private_key|sid|session_id|key)[\"']?\\s*[:=]\\s*[\"']?([^\"'\\s,]{4,})");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+    private static final Pattern GENERIC_SECRET = Pattern.compile("(?i)(password|secret|api_key|auth_token|access_token|private_key|key)[\"']?\\s*[:=]\\s*[\"']?([^\"'\\s,]{4,})");
+    private static final Pattern PII_EMAIL = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+    private static final Pattern HEALTH_DATA = Pattern.compile("(?i)(heart_rate|blood_pressure|glucose|weight|height|bmi)\\s*[:=]\\s*\\d+");
 
     public StorageInspector(@NonNull Context context) {
         this.context = context.getApplicationContext();
     }
 
-    /**
-     * Executes a comprehensive security audit including local storage and system-wide apps.
-     * @return List of discovered vulnerabilities.
-     */
     @NonNull
     public List<Finding> performFullAudit() {
         long startTime = System.currentTimeMillis();
         findings.clear();
 
-        // 1. Audit this app's storage (Deep Scan)
         auditManifestPermissions();
         auditStorageEncryption();
         auditDatabaseSecurity();
         scanInternalFilesystem();
-
-        // 2. Audit other installed apps (System Scan)
         scanSystemWideApps();
 
         lastScanDuration = System.currentTimeMillis() - startTime;
         return new ArrayList<>(findings);
     }
 
-    public long getLastScanDuration() {
-        return lastScanDuration;
+    public long getLastScanDuration() { return lastScanDuration; }
+
+    // --- EXPLORER MODULES ---
+
+    public List<String> getSharedPreferencesFiles() {
+        List<String> fileList = new ArrayList<>();
+        File prefsDir = new File(context.getApplicationInfo().dataDir, "shared_prefs");
+        if (prefsDir.exists() && prefsDir.isDirectory()) {
+            File[] files = prefsDir.listFiles();
+            if (files != null) {
+                for (File f : files) if (f.getName().endsWith(".xml")) fileList.add(f.getName().replace(".xml", ""));
+            }
+        }
+        return fileList;
     }
 
-    /**
-     * Scans all installed third-party applications for public security flaws.
-     */
+    public int getPrefsCount() {
+        return getSharedPreferencesFiles().size();
+    }
+
+    public List<String> getDatabaseFiles() {
+        List<String> dbList = new ArrayList<>();
+        String[] dbs = context.databaseList();
+        if (dbs != null) {
+            for (String db : dbs) {
+                if (!db.endsWith("-journal") && !db.endsWith("-wal") && !db.endsWith("-shm")) dbList.add(db);
+            }
+        }
+        return dbList;
+    }
+
+    public int getDbCount() {
+        return getDatabaseFiles().size();
+    }
+
+    public List<File> getInternalFilesList() {
+        List<File> fileList = new ArrayList<>();
+        File filesDir = context.getFilesDir();
+        if (filesDir.exists()) {
+            File[] files = filesDir.listFiles();
+            if (files != null) {
+                for (File f : files) fileList.add(f);
+            }
+        }
+        return fileList;
+    }
+
+    public int getFilesCount() {
+        return getInternalFilesList().size();
+    }
+
+    public long getCacheSizeRaw() {
+        return getFolderSize(context.getCacheDir());
+    }
+
+    public String getCacheSize() {
+        return getFormattedCacheSize();
+    }
+
+    public String getFormattedCacheSize() {
+        long size = getCacheSizeRaw();
+        if (size <= 0) return "0 B";
+        final String[] units = new String[] { "B", "KB", "MB", "GB" };
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return new java.text.DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    private long getFolderSize(File file) {
+        long size = 0;
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) for (File f : files) size += getFolderSize(f);
+        } else {
+            size = file.length();
+        }
+        return size;
+    }
+
+    // --- AUDIT LOGIC ---
+
     private void scanSystemWideApps() {
         PackageManager pm = context.getPackageManager();
         List<PackageInfo> packages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS);
-
         for (PackageInfo pkg : packages) {
-            // Skip system apps to focus on user-installed apps
             if ((pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) continue;
-            // Skip ourselves as we are already scanned
             if (pkg.packageName.equals(context.getPackageName())) continue;
-
-            String appLabel = pm.getApplicationLabel(pkg.applicationInfo).toString();
-
-            // A. Check for Debuggable Apps (Critical Security Flaw)
+            String label = pm.getApplicationLabel(pkg.applicationInfo).toString();
             if ((pkg.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-                addFinding("External App Vulnerability", 
-                    "App '" + appLabel + "' is DEBUGGABLE. It can be easily compromised or monitored.", 
-                    Finding.Severity.CRITICAL, Finding.Category.MANIFEST, 
-                    "Consider uninstalling this app as it poses a risk to the whole system.");
-            }
-
-            // B. Check for Backup exposure
-            if ((pkg.applicationInfo.flags & ApplicationInfo.FLAG_ALLOW_BACKUP) != 0) {
-                addFinding("Data Extraction Risk", 
-                    "App '" + appLabel + "' allows ADB backups. Its data can be stolen via USB.", 
-                    Finding.Severity.WARNING, Finding.Category.MANIFEST, 
-                    "Ensure your phone's ADB debugging is turned off when not in use.");
-            }
-
-            // C. Check for Dangerous Permission combinations
-            if (pkg.requestedPermissions != null) {
-                int score = 0;
-                for (String p : pkg.requestedPermissions) {
-                    if (p.contains("SMS")) score += 2;
-                    if (p.contains("RECORD_AUDIO")) score += 2;
-                    if (p.contains("LOCATION")) score += 1;
-                    if (p.contains("READ_CONTACTS")) score += 1;
-                }
-                
-                if (score >= 4) {
-                    addFinding("High-Privilege App", 
-                        "App '" + appLabel + "' has a high-risk permission profile (SMS/Audio/Loc).", 
-                        Finding.Severity.INFO, Finding.Category.MANIFEST, 
-                        "Verify if this app actually needs these permissions in Android Settings.");
-                }
+                addFinding("Critical Vulnerability: " + label, "App is DEBUGGABLE.", Finding.Severity.CRITICAL, Finding.Category.MANIFEST, "Contact dev to disable debug mode.");
             }
         }
     }
 
     private void auditManifestPermissions() {
         try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
-            ApplicationInfo appInfo = packageInfo.applicationInfo;
-
-            if ((appInfo.flags & ApplicationInfo.FLAG_ALLOW_BACKUP) != 0) {
-                addFinding("Backup Configuration Leak", 
-                    "Application data can be extracted via ADB backup.", 
-                    Finding.Severity.WARNING, Finding.Category.MANIFEST, 
-                    "Set android:allowBackup=\"false\" in Manifest.");
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            if ((info.applicationInfo.flags & ApplicationInfo.FLAG_ALLOW_BACKUP) != 0) {
+                addFinding("Backup Risk", "android:allowBackup is TRUE.", Finding.Severity.WARNING, Finding.Category.MANIFEST, "Set allowBackup to false.");
             }
-
-            if (packageInfo.requestedPermissions != null) {
-                for (String permission : packageInfo.requestedPermissions) {
-                    if (permission.equals("android.permission.READ_EXTERNAL_STORAGE")) {
-                        addFinding("Excessive Permission", 
-                            "App requests broad storage access. Risk of PII exposure.", 
-                            Finding.Severity.INFO, Finding.Category.MANIFEST, 
-                            "Use Scoped Storage (MediaStore API) instead of broad permissions.");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Manifest audit failed", e);
-        }
+        } catch (Exception ignored) {}
     }
 
     private void auditStorageEncryption() {
-        File prefsDir = new File(context.getApplicationInfo().dataDir, "shared_prefs");
-        if (prefsDir.exists() && prefsDir.isDirectory()) {
-            File[] files = prefsDir.listFiles();
-            if (files != null && files.length > 0) {
-                addFinding("Unencrypted Preferences Detected", 
-                    "Found " + files.length + " unencrypted XML preference files.", 
-                    Finding.Severity.WARNING, Finding.Category.PREFERENCES, 
-                    "Replace PreferenceManager with EncryptedSharedPreferences (Jetpack Security).");
-            }
+        if (!getSharedPreferencesFiles().isEmpty()) {
+            addFinding("Unencrypted Preferences", "Found plain XML preferences.", Finding.Severity.WARNING, Finding.Category.PREFERENCES, "Use EncryptedSharedPreferences.");
         }
     }
 
     private void auditDatabaseSecurity() {
-        String[] dbs = context.databaseList();
-        if (dbs != null) {
-            for (String db : dbs) {
-                if (db.endsWith("-journal") || db.endsWith("-wal")) continue;
-                addFinding("Plaintext Database", 
-                    "Database '" + db + "' is stored without at-rest encryption.", 
-                    Finding.Severity.CRITICAL, Finding.Category.DATABASE, 
-                    "Implement SQLCipher to encrypt the SQLite database file.");
-            }
+        if (!getDatabaseFiles().isEmpty()) {
+            addFinding("Unencrypted Database", "SQLite databases are not encrypted at rest.", Finding.Severity.WARNING, Finding.Category.DATABASE, "Use SQLCipher with Room.");
         }
     }
 
     private void scanInternalFilesystem() {
         scanDir(context.getFilesDir());
-        scanDir(context.getCacheDir());
     }
 
     private void scanDir(File dir) {
@@ -182,19 +183,13 @@ public class StorageInspector {
     }
 
     private void analyzeFile(File file) {
-        if (file.getName().endsWith(".db") || file.length() > 1024 * 500) return;
-
+        if (file.getName().endsWith(".db") || file.length() > 500000) return;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (JWT_PATTERN.matcher(line).find()) {
-                    addFinding("Hardcoded JWT Token", "Found active session token in " + file.getName(), 
-                        Finding.Severity.CRITICAL, Finding.Category.FILESYSTEM, "Never store raw tokens. Use Keystore.");
-                }
-                if (GENERIC_SECRET.matcher(line).find()) {
-                    addFinding("Sensitive Secret Detected", "Possible API Key or Secret in " + file.getName(), 
-                        Finding.Severity.WARNING, Finding.Category.FILESYSTEM, "Obfuscate secrets or move to secure backend.");
-                }
+                if (JWT_PATTERN.matcher(line).find()) addFinding("JWT Detected", "Found token in " + file.getName(), Finding.Severity.CRITICAL, Finding.Category.FILESYSTEM, "Use Keystore.");
+                if (GENERIC_SECRET.matcher(line).find()) addFinding("Secret Key Detected", "API Key in " + file.getName(), Finding.Severity.CRITICAL, Finding.Category.FILESYSTEM, "Obfuscate keys.");
+                if (HEALTH_DATA.matcher(line).find()) addFinding("Health Data Exposure", "Unencrypted medical data in " + file.getName(), Finding.Severity.WARNING, Finding.Category.FILESYSTEM, "Encrypt health records.");
             }
         } catch (IOException ignored) {}
     }

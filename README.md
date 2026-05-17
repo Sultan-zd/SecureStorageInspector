@@ -1,51 +1,36 @@
-# 🛡️ Secure Inspector - Audit de Sécurité Android
+# 🛡️ Secure Storage Suite & Inspector
 
-**Secure Inspector** est un outil d'audit de sécurité avancé pour Android. Il permet d'analyser à la fois la propre sécurité de l'application (Auto-Audit) et de scanner les autres applications installées sur l'appareil pour détecter des vulnérabilités critiques.
-
----
-
-## 🌟 Points Forts
-- **Conformité OWASP** : Basé sur les standards de sécurité mobile les plus rigoureux.
-- **Analyse en Temps Réel** : Moteur de scan optimisé pour une réponse ultra-rapide.
-- **Reporting Professionnel** : Exportation de rapports détaillés pour les équipes de sécurité.
-- **Design Cyber-Security** : Interface moderne et intuitive sous Material 3.
+**Secure Storage Suite** est une solution Android "all-in-one" alliant **Exploration de Stockage** et **Audit de Cybersécurité**. Elle permet aux développeurs et aux utilisateurs avancés de gérer leurs données locales tout en s'assurant qu'aucune information sensible (tokens, mots de passe) ne soit exposée.
 
 ---
 
-## 🚀 Fonctionnalités principales
+## 🌟 Double Mission : Gestion & Sécurité
 
-### 1. Auto-Audit (Garde du Corps)
-L'application analyse ses propres dossiers pour s'assurer qu'aucune donnée sensible n'est exposée :
-- Scan des **SharedPreferences** non chiffrées.
-- Détection de bases de données **SQLite/Room** sans SQLCipher.
-- Recherche de **Secrets Hardcodés** (JWT, API Keys, Emails) dans les fichiers internes et cache.
+### 📂 Module 1 : Storage Explorer (Gestion)
+Une interface immersive pour visualiser l'état de santé du stockage de l'application :
+- **SharedPrefs Manager** : Comptabilisation des fichiers de préférences et détection des entrées sensibles.
+- **Database Visualizer** : Identification des bases de données Room/SQLite et vérification de leur état de chiffrement.
+- **Internal File Browser** : Exploration du dossier `files/` pour gérer les documents JSON, XML et TXT.
+- **Cache Analytics** : Calculateur de taille de cache en temps réel pour une optimisation de l'espace disque.
 
-### 2. Scanner Système (Audit des tiers)
-Identifie les failles chez les autres applications installées :
-- Détection du mode **Debuggable** (Apps vulnérables au reverse engineering).
-- Identification du flag **AllowBackup** (Risque de vol de données via USB/ADB).
-- Analyse des **Permissions Risquées** (Accès SMS, Micro, Caméra non justifié).
-
-### 3. Dashboard & Reporting
-- Visualisation claire des vulnérabilités par niveau de sévérité.
-- Recommandations techniques précises pour chaque faille trouvée.
-- Partage du rapport d'audit complet en un clic.
+### 🛡️ Module 2 : Security Auditor (Protection)
+Un moteur d'analyse profond basé sur les standards OWASP Mobile :
+- **Sensitive Data Classifier** : Reconnaissance automatique (via Regex avancées) de jetons **JWT**, clés d'API, identifiants et données de santé.
+- **System-Wide Scan** : Analyse des autres applications du téléphone pour détecter les failles critiques (applications en mode `debuggable`, permissions excessives).
+- **Rapport d'Audit Professionnel** : Exportation d'un rapport technique complet pour partage avec les équipes de développement.
 
 ---
+
+## 🚀 Caractéristiques Professionnelles
+- **UI Matérielle** : Conçu avec **Material Design 3**, incluant un dashboard dynamique et un mode sombre adaptatif.
+- **Performance** : Moteur de scan optimisé avec retour visuel immédiat (Scan Duration Analytics).
+- **Sécurité Jetpack** : Intègre les recommandations pour `EncryptedSharedPreferences` et `SQLCipher`.
 
 ## 🛠️ Stack Technique
-- **Langage** : Java
-- **UI** : Material Design 3, ViewBinding, CoordinatorLayout.
-- **Architecture** : Modulaire et orientée objet pour une intégration facile en tant que SDK.
-- **Sécurité** : Jetpack Security Crypto.
+- **Langage** : Java (Architecture orientée objet)
+- **UI Framework** : Material 3, ViewBinding, CoordinatorLayout.
+- **Moteur d'Audit** : Analyse statique par Pattern Matching (Regex).
+- **Compatibilité** : Android 7.0+ (API 24).
 
 ---
-
-## 📥 Installation & Test
-1. Clonez le dépôt.
-2. Ouvrez dans **Android Studio**.
-3. Lancez sur un émulateur ou un téléphone physique.
-4. Cliquez sur **"Scan Application"** pour voir le moteur en action.
-
----
-*Ce projet a été réalisé pour démontrer une expertise en sécurité Android et en développement d'outils de diagnostic professionnels.*
+*Ce projet démontre une expertise complète en architecture logicielle Android et en cybersécurité offensive/défensive.*

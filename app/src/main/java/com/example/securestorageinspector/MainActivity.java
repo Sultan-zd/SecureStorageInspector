@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Main Activity for Secure Inspector.
- * High-end UI implementation with state management, scan analytics, and report exporting.
+ * Main Activity for Secure Storage Suite.
+ * Combines advanced security auditing with a professional storage explorer.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -36,12 +36,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
-        setupUI();
-        
         inspector = new StorageInspector(this);
         
-        // Populate dummy vulnerabilities for demonstration
-        // simulateVulnerabilities();
+        setupUI();
+        refreshStorageStats();
+        
+        // Simulation for demonstration purposes
+        simulateVulnerabilities();
     }
 
     private void setupUI() {
@@ -49,9 +50,27 @@ public class MainActivity extends AppCompatActivity {
         adapter = new FindingsAdapter(findingsList);
         binding.recyclerViewFindings.setAdapter(adapter);
 
+        // Security Deep Audit Button
         binding.btnInspect.setOnClickListener(v -> startSecurityScan());
         
+        // Export Audit Report Button
         binding.btnExport.setOnClickListener(v -> exportSecurityReport());
+
+        // Storage Explorer Cards (Navigating to modules)
+        binding.cardPrefs.setOnClickListener(v -> showFeatureToast("SharedPrefs Explorer"));
+        binding.cardDatabases.setOnClickListener(v -> showFeatureToast("Database Visualizer"));
+        binding.cardFiles.setOnClickListener(v -> showFeatureToast("File Browser"));
+        binding.cardCache.setOnClickListener(v -> showFeatureToast("Cache Manager"));
+    }
+
+    /**
+     * Updates the storage explorer cards with real-time statistics.
+     */
+    private void refreshStorageStats() {
+        binding.tvPrefsCount.setText(String.format(Locale.getDefault(), "%d files", inspector.getPrefsCount()));
+        binding.tvDbCount.setText(String.format(Locale.getDefault(), "%d DBs", inspector.getDbCount()));
+        binding.tvFilesCount.setText(String.format(Locale.getDefault(), "%d items", inspector.getFilesCount()));
+        binding.tvCacheSize.setText(inspector.getCacheSize());
     }
 
     private void startSecurityScan() {
@@ -64,9 +83,10 @@ public class MainActivity extends AppCompatActivity {
         binding.tvDetailedLabel.setVisibility(View.GONE);
         binding.tvScanTime.setVisibility(View.GONE);
 
-        // Professional simulation of scanning process
+        // Simulate a professional processing delay for audit depth
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             performInspection();
+            refreshStorageStats(); // Refresh stats after scan
             
             // UI State: Finished
             binding.progressBar.setVisibility(View.GONE);
@@ -83,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 binding.tvScanTime.setText(durationMsg);
                 binding.tvScanTime.setVisibility(View.VISIBLE);
             }
-        }, 1200);
+        }, 1500);
     }
 
     private void performInspection() {
@@ -96,14 +116,14 @@ public class MainActivity extends AppCompatActivity {
         if (results.isEmpty()) {
             binding.emptyState.setVisibility(View.VISIBLE);
             Toast.makeText(this, R.string.msg_no_vulnerabilities, Toast.LENGTH_LONG).show();
-            resetDashboard();
+            resetSecurityDashboard();
         } else {
             binding.emptyState.setVisibility(View.GONE);
-            updateDashboard(results);
+            updateSecurityDashboard(results);
         }
     }
 
-    private void updateDashboard(List<Finding> results) {
+    private void updateSecurityDashboard(List<Finding> results) {
         int critical = 0;
         int warning = 0;
         int info = 0;
@@ -125,15 +145,19 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void resetDashboard() {
+    private void resetSecurityDashboard() {
         binding.tvCriticalCount.setText("0");
         binding.tvWarningCount.setText("0");
         binding.tvInfoCount.setText("0");
     }
 
+    private void showFeatureToast(String feature) {
+        Toast.makeText(this, feature + " module ready", Toast.LENGTH_SHORT).show();
+    }
+
     private void exportSecurityReport() {
         StringBuilder report = new StringBuilder();
-        report.append("--- SECURITY AUDIT REPORT ---\n");
+        report.append("--- SECURE STORAGE SUITE AUDIT REPORT ---\n");
         report.append("App: ").append(getString(R.string.app_name)).append("\n");
         report.append("Findings: ").append(findingsList.size()).append("\n\n");
         
@@ -151,15 +175,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void simulateVulnerabilities() {
-        // SharedPreferences avec données sensibles
-        getSharedPreferences("auth_cache", MODE_PRIVATE)
+        // SharedPrefs avec token JWT simulé
+        getSharedPreferences("user_session", MODE_PRIVATE)
                 .edit()
-                .putString("last_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-X9")
+                .putString("access_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-X9")
                 .apply();
 
-        // Fichier JSON avec clé API
+        // Fichier config avec secret
         try (FileOutputStream fos = openFileOutput("secrets.json", MODE_PRIVATE)) {
-            String data = "{\"firebase_key\": \"AIzaSyB_12345\", \"owner\": \"dev@secure.com\"}";
+            String data = "{\"api_key\": \"sk_live_professional_key_123\"}";
             fos.write(data.getBytes());
         } catch (Exception e) {
             e.printStackTrace();

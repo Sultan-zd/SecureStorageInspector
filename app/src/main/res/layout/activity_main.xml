@@ -10,7 +10,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="200dp"
         android:background="@color/primary_dark"
         android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar">
 
@@ -19,11 +19,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:contentScrim="@color/primary_dark"
-            app:expandedTitleMarginBottom="32dp"
+            app:expandedTitleMarginBottom="24dp"
             app:expandedTitleMarginStart="24dp"
-            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineMedium"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:title="Security Shield">
+            app:title="Secure Storage Suite">
 
             <View
                 android:layout_width="match_parent"
@@ -65,55 +64,170 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="16dp">
+            android:padding="16dp">
 
-            <!-- Summary Dashboard Card -->
+            <!-- STORAGE EXPLORER GRID -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Storage Explorer"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_light"
+                android:textAllCaps="true"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="4dp"/>
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:alignmentMode="alignMargins"
+                android:columnOrderPreserved="false"
+                android:layout_marginBottom="24dp">
+
+                <!-- Preferences Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPrefs"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:background="#10219EBC">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_manage" app:tint="@color/severity_info" android:contentDescription="Shared Preferences"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SharedPrefs" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                        <TextView android:id="@+id/tvPrefsCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 files" android:textSize="12sp" android:alpha="0.7"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Databases Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardDatabases"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:background="#10F57C00">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_dialog_dialer" app:tint="@color/severity_warning" android:contentDescription="Databases"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Databases" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                        <TextView android:id="@+id/tvDbCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 DBs" android:textSize="12sp" android:alpha="0.7"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Files Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardFiles"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:background="#102D6A4F">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_save" app:tint="@color/severity_safe" android:contentDescription="Internal Files"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Internal Files" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                        <TextView android:id="@+id/tvFilesCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 items" android:textSize="12sp" android:alpha="0.7"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Cache Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardCache"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:background="#10E63946">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_delete" app:tint="@color/severity_critical" android:contentDescription="Cache"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="App Cache" android:textStyle="bold" android:layout_marginTop="8dp"/>
+                        <TextView android:id="@+id/tvCacheSize" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 MB" android:textSize="12sp" android:alpha="0.7"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </GridLayout>
+
+            <!-- SECURITY AUDIT SUMMARY -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Security Audit"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_light"
+                android:textAllCaps="true"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="4dp"/>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardSummary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="24dp"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="12dp"
-                app:strokeWidth="0dp">
-
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp"
+                android:layout_marginBottom="24dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_dashboard"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="20dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/title_system_overview"
+                            android:text="Scan Metrics"
                             android:textColor="#A0FFFFFF"
-                            android:textSize="12sp"
+                            android:textSize="10sp"
                             android:textStyle="bold"
-                            android:textAllCaps="true"
-                            android:letterSpacing="0.1" />
-
+                            android:textAllCaps="true" />
                         <TextView
                             android:id="@+id/tvScanTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:textColor="@color/cyan_glow"
-                            android:textSize="11sp"
+                            android:textSize="10sp"
                             android:textStyle="bold"
-                            tools:text="ENGINE ACTIVE" />
+                            tools:text="ENGINE IDLE" />
                     </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
+                        android:layout_marginTop="16dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -128,18 +242,18 @@
                                 android:layout_height="wrap_content"
                                 android:text="0"
                                 android:textColor="@color/severity_critical"
-                                android:textSize="36sp"
+                                android:textSize="24sp"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/label_critical"
+                                android:text="CRITICAL"
                                 android:textColor="@color/white"
-                                android:textSize="11sp"
+                                android:textSize="9sp"
                                 android:alpha="0.7" />
                         </LinearLayout>
 
-                        <View android:layout_width="1dp" android:layout_height="40dp" android:background="#20FFFFFF" android:layout_gravity="center" />
+                        <View android:layout_width="1dp" android:layout_height="30dp" android:background="#20FFFFFF" android:layout_gravity="center" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -153,18 +267,18 @@
                                 android:layout_height="wrap_content"
                                 android:text="0"
                                 android:textColor="@color/severity_warning"
-                                android:textSize="36sp"
+                                android:textSize="24sp"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/label_warnings"
+                                android:text="WARNINGS"
                                 android:textColor="@color/white"
-                                android:textSize="11sp"
+                                android:textSize="9sp"
                                 android:alpha="0.7" />
                         </LinearLayout>
 
-                        <View android:layout_width="1dp" android:layout_height="40dp" android:background="#20FFFFFF" android:layout_gravity="center" />
+                        <View android:layout_width="1dp" android:layout_height="30dp" android:background="#20FFFFFF" android:layout_gravity="center" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -178,86 +292,60 @@
                                 android:layout_height="wrap_content"
                                 android:text="0"
                                 android:textColor="@color/severity_info"
-                                android:textSize="36sp"
+                                android:textSize="24sp"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/label_info"
+                                android:text="INFO"
                                 android:textColor="@color/white"
-                                android:textSize="11sp"
+                                android:textSize="9sp"
                                 android:alpha="0.7" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:id="@+id/tvDetailedLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/title_detailed_findings"
-                    android:textColor="@color/primary_dark"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/emptyState"
-                android:layout_width="match_parent"
-                android:layout_height="240dp"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@android:drawable/ic_lock_idle_lock"
-                    app:tint="@color/primary_light"
-                    android:alpha="0.2" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/msg_ready_to_scan"
-                    android:textColor="@color/primary_main"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/msg_start_audit"
-                    android:textColor="#80000000"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginBottom="24dp"
                 android:indeterminate="true"
                 android:visibility="gone"
-                app:trackCornerRadius="4dp" />
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:id="@+id/tvDetailedLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_detailed_findings"
+                android:textColor="@color/primary_dark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:layout_marginBottom="12dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewFindings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:clipToPadding="false"
                 tools:listitem="@layout/item_finding" />
+
+            <LinearLayout
+                android:id="@+id/emptyState"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/msg_ready_to_scan"
+                    android:textColor="@color/primary_main"
+                    android:textSize="16sp"
+                    android:textStyle="italic" />
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -268,11 +356,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="32dp"
-        android:text="@string/action_scan_application"
+        android:text="Deep Security Audit"
         android:textColor="@color/white"
         android:backgroundTint="@color/primary_main"
         app:icon="@android:drawable/ic_menu_search"
-        app:iconTint="@color/white"
-        app:elevation="8dp" />
+        app:iconTint="@color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
