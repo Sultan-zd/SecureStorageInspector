@@ -1,36 +1,80 @@
-# 🛡️ Secure Storage Suite & Inspector
+# Secure Storage Inspector
 
-**Secure Storage Suite** est une solution Android "all-in-one" alliant **Exploration de Stockage** et **Audit de Cybersécurité**. Elle permet aux développeurs et aux utilisateurs avancés de gérer leurs données locales tout en s'assurant qu'aucune information sensible (tokens, mots de passe) ne soit exposée.
+![Android CI](https://github.com/Sultan-zd/SecureStorageInspector/actions/workflows/android-ci.yml/badge.svg)
 
----
+An Android security utility for inspecting application storage and identifying common mobile data-protection risks in controlled test environments.
 
-## 🌟 Double Mission : Gestion & Sécurité
+> Use this project only on devices and applications you own or are explicitly authorized to assess.
 
-### 📂 Module 1 : Storage Explorer (Gestion)
-Une interface immersive pour visualiser l'état de santé du stockage de l'application :
-- **SharedPrefs Manager** : Comptabilisation des fichiers de préférences et détection des entrées sensibles.
-- **Database Visualizer** : Identification des bases de données Room/SQLite et vérification de leur état de chiffrement.
-- **Internal File Browser** : Exploration du dossier `files/` pour gérer les documents JSON, XML et TXT.
-- **Cache Analytics** : Calculateur de taille de cache en temps réel pour une optimisation de l'espace disque.
+## Capabilities
 
-### 🛡️ Module 2 : Security Auditor (Protection)
-Un moteur d'analyse profond basé sur les standards OWASP Mobile :
-- **Sensitive Data Classifier** : Reconnaissance automatique (via Regex avancées) de jetons **JWT**, clés d'API, identifiants et données de santé.
-- **System-Wide Scan** : Analyse des autres applications du téléphone pour détecter les failles critiques (applications en mode `debuggable`, permissions excessives).
-- **Rapport d'Audit Professionnel** : Exportation d'un rapport technique complet pour partage avec les équipes de développement.
+### Storage inspection
 
----
+- Browse application files and cache usage
+- Inspect SharedPreferences and Room/SQLite databases
+- Identify potentially sensitive values in local storage
+- Review database encryption status
 
-## 🚀 Caractéristiques Professionnelles
-- **UI Matérielle** : Conçu avec **Material Design 3**, incluant un dashboard dynamique et un mode sombre adaptatif.
-- **Performance** : Moteur de scan optimisé avec retour visuel immédiat (Scan Duration Analytics).
-- **Sécurité Jetpack** : Intègre les recommandations pour `EncryptedSharedPreferences` et `SQLCipher`.
+### Security analysis
 
-## 🛠️ Stack Technique
-- **Langage** : Java (Architecture orientée objet)
-- **UI Framework** : Material 3, ViewBinding, CoordinatorLayout.
-- **Moteur d'Audit** : Analyse statique par Pattern Matching (Regex).
-- **Compatibilité** : Android 7.0+ (API 24).
+- Detect JWTs, API keys and credential-like patterns
+- Flag debuggable applications and excessive permissions
+- Produce a structured audit report for developers
+- Present findings through a Material Design interface
 
----
-*Ce projet démontre une expertise complète en architecture logicielle Android et en cybersécurité offensive/défensive.*
+## Architecture
+
+```mermaid
+flowchart TD
+    UI[Android UI] --> Explorer[Storage explorer]
+    UI --> Auditor[Security auditor]
+    Explorer --> Local[App files, preferences and databases]
+    Auditor --> Classifier[Sensitive-data classifier]
+    Auditor --> Checks[Configuration checks]
+    Classifier --> Report[Audit report]
+    Checks --> Report
+```
+
+## Technology
+
+- Java
+- Android SDK 36, minimum API 24
+- Material Components
+- View Binding
+- AndroidX Security Crypto
+- Gradle Kotlin DSL
+
+## Build and run
+
+```bash
+git clone https://github.com/Sultan-zd/SecureStorageInspector.git
+cd SecureStorageInspector
+
+# Linux/macOS
+./gradlew assembleDebug
+
+# Windows
+# gradlew.bat assembleDebug
+```
+
+Install the generated debug APK on an emulator or authorized test device. The project can also be opened in Android Studio for interactive development.
+
+## Validation
+
+```bash
+./gradlew test
+./gradlew lint
+./gradlew assembleDebug
+```
+
+GitHub Actions runs the Android build and static checks for pushes and pull requests.
+
+## Security considerations
+
+This tool handles potentially sensitive local data. Do not use it on another person's device without permission. Do not include extracted credentials, tokens, personal data or screenshots containing secrets in issues, commits or documentation.
+
+The pattern-based classifier is a triage aid, not a complete mobile security assessment. Findings require human review and should be validated against the application threat model.
+
+## Documentation
+
+See [`DOCUMENTATION_TECHNIQUE.md`](DOCUMENTATION_TECHNIQUE.md) for implementation details.
